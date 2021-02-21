@@ -35,17 +35,19 @@ isvalidPos (i, j) = (i >= 1 && i <= boardSize) && (j >= 1 && j <= boardSize)
 formatBoard :: Grid -> String
 formatBoard b = topbar ++ (snd $ foldr go ('i', sepLine) b) where
       go :: [Content] -> (Char,String) -> (Char,String)
-      go l (c,s) = (pred c, sepLine ++ (c:' ':(foldr walk "|\n" l)) ++ s)
+      go l (c,s) = (pred c, sepLine ++ (c:' ':(foldr walk (pipesym ++ "\n") l)) ++ s)
       walk :: Content -> String -> String
-      walk Blank s = "| # " ++ s
-      walk Mine s = "| # " ++ s
-      walk (Open n) s = "| " ++ show n ++ " " ++ s
-      walk (Close _) s = "| # " ++ s
-      walk OMine s = "| % " ++ s
+      walk Blank s = pipesym ++ " # " ++ s
+      walk Mine s = pipesym ++ " # " ++ s
+      walk (Open n) s = pipesym ++ " " ++ show n ++ " " ++ s
+      walk (Close _) s = pipesym ++ " # " ++ s
+      walk OMine s = pipesym ++ " % " ++ s
       sepLine :: String
-      sepLine = "  +" ++ replicate (boardSize * 4 - 1) '-' ++ "+\n"
+      sepLine = "  \x1b[30;1m+" ++ replicate (boardSize * 4 - 1) '-' ++ "+\x1b[0m\n"
       topbar :: String
-      topbar = "    " ++ foldr (\i s -> show i ++ "   " ++ s) "  " [1..boardSize] ++ "\n" 
+      topbar = "    " ++ foldr (\i s -> show i ++ "   " ++ s) "  " [1..boardSize] ++ "\n"
+      pipesym :: String
+      pipesym = "\x1b[30;1m|\x1b[0m"
 
 -- done
 -- well defined for size < 10
